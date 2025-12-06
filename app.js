@@ -1,17 +1,24 @@
-const API_URL = "https://YOUR-RENDER-URL.onrender.com/api/mutation-analysis";
+// TODO: replace with your real Render backend URL
+const API_URL = "https://molecule-mutation-backend.onrender.com";
 
-document.getElementById("mutation-form").addEventListener("submit", async (e) => {
+const form = document.getElementById("mutation-form");
+const loadingEl = document.getElementById("loading-indicator");
+const errorEl = document.getElementById("error");
+const resultsSection = document.getElementById("results");
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const form = e.target;
+
+  errorEl.style.display = "none";
+  errorEl.textContent = "";
+  resultsSection.style.display = "none";
+  loadingEl.style.display = "inline-block";
+
   const formData = new FormData(form);
   const payload = Object.fromEntries(formData.entries());
 
-  const errorEl = document.getElementById("error");
-  const resultsEl = document.getElementById("results");
-  errorEl.style.display = "none";
-  resultsEl.style.display = "none";
-
   if (!payload.base_molecule || !payload.mutation) {
+    loadingEl.style.display = "none";
     errorEl.textContent = "Please fill in both base molecule and mutation.";
     errorEl.style.display = "block";
     return;
@@ -21,60 +28,80 @@ document.getElementById("mutation-form").addEventListener("submit", async (e) =>
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Server error");
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Server error: ${res.status} ${text}`);
+    }
 
     const data = await res.json();
     renderResults(data);
   } catch (err) {
     console.error(err);
-    errorEl.textContent = "Failed to analyze mutation. Please try again.";
+    errorEl.textContent =
+      "Failed to analyze mutation. Please try again or check the console for details.";
     errorEl.style.display = "block";
+  } finally {
+    loadingEl.style.display = "none";
   }
 });
 
 function renderResults(data) {
-  document.getElementById("summary").textContent = data.summary;
+  // Summary
+  document.getElementById("summary").textContent = data.summary || "";
 
+  // Key changes
   const keyList = document.getElementById("key-changes");
   keyList.innerHTML = "";
   const kc = data.key_changes || {};
-  const mapping = {
+  const labels = {
     reactivity: "Reactivity",
     acidity_basicity: "Acidity / Basicity",
     sterics: "Steric effects",
     electronics: "Electronic effects",
-    intermediate_stability: "Intermediate stability"
+    intermediate_stability: "Intermediate stability",
   };
 
-  Object.entries(mapping).forEach(([key, label]) => {
+  Object.entries(labels).forEach(([key, label]) => {
     if (kc[key]) {
       const li = document.createElement("li");
-      li.textContent = `${label}: ${kc[key]}`;
+      li.innerHTML = `<strong>${label}:</strong> ${kc[key]}`;
       keyList.appendChild(li);
     }
   });
 
-  document.getElementById("mech-before").textContent = data.mechanisms.before;
-  document.getElementById("mech-after").textContent = data.mechanisms.after;
-  document.getElementById("mech-comparison").textContent = data.mechanisms.comparison;
+  // Mechanisms
+  document.getElementById("mech-before").textContent =
+    data.mechanisms?.before || "";
+  document.getElementById("mech-after").textContent =
+    data.mechanisms?.after || "";
+  document.getElementById("mech-comparison").textContent =
+    data.mechanisms?.comparison || "";
 
+  // Example reactions
   const exList = document.getElementById("example-reactions");
   exList.innerHTML = "";
   (data.example_reactions || []).forEach((ex) => {
     const li = document.createElement("li");
-    li.innerHTML = `<strong>${ex.description}</strong><br>
-      Before: ${ex.before_mutation_outcome}<br>
-      After: ${ex.after_mutation_outcome}`;
+    li.innerHTML = `
+      <p class="example-label">Scenario</p>
+      <p>${ex.description}</p>
+      <p class="example-label">Before mutation</p>
+      <p>${ex.before_mutation_outcome}</p>
+      <p class="example-label">After mutation</p>
+      <p>${ex.after_mutation_outcome}</p>
+    `;
     exList.appendChild(li);
   });
 
+  // Explanations
   document.getElementById("explain-simple").textContent =
-    data.explanation_levels.simple;
+    data.explanation_levels?.simple || "";
   document.getElementById("explain-detailed").textContent =
-    data.explanation_levels.detailed;
+    data.explanation_levels?.detailed || "";
 
-  document.getElementById("results").style.display = "block";
+  resultsSection.style.display = "block";
 }
+
