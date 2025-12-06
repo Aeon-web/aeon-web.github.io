@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Molecule Mutation Generator – What Does This Change Do?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>🧪 Molecule Mutation Generator</h1>
+    <p>Describe a molecule and a change you want to make. The AI will tell you how it affects reactivity and mechanisms.</p>
+
+    <form id="mutation-form">
+      <label>
+        Base molecule
+        <textarea name="base_molecule" rows="3"
+          placeholder="e.g., secondary alkyl bromide: CH3–CHBr–CH2–CH3"></textarea>
+      </label>
+
+      <label>
+        Mutation
+        <textarea name="mutation" rows="3"
+          placeholder="e.g., replace Br with OTs; or add a nitro group para to the methyl group."></textarea>
+      </label>
+
+      <label>
+        Optional question / context
+        <textarea name="question" rows="2"
+          placeholder="e.g., How does this affect SN1 vs SN2?"></textarea>
+      </label>
+
+      <button type="submit">Analyze Mutation</button>
+    </form>
+
+    <div id="error" class="error" style="display:none;"></div>
+
+    <section id="results" style="display:none;">
+      <h2>Analysis Result</h2>
+      <p id="summary"></p>
+
+      <h3>Key Changes</h3>
+      <ul id="key-changes"></ul>
+
+      <h3>Mechanisms</h3>
+      <p><strong>Before mutation:</strong> <span id="mech-before"></span></p>
+      <p><strong>After mutation:</strong> <span id="mech-after"></span></p>
+      <p><strong>Comparison:</strong> <span id="mech-comparison"></span></p>
+
+      <h3>Example Reactions</h3>
+      <ul id="example-reactions"></ul>
+
+      <h3>Explanations</h3>
+      <details open>
+        <summary>Simple</summary>
+        <p id="explain-simple"></p>
+      </details>
+      <details>
+        <summary>Detailed</summary>
+        <p id="explain-detailed"></p>
+      </details>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+app.js
+js
+Copy code
+const API_URL = "https://YOUR-RENDER-URL.onrender.com/api/mutation-analysis";
+
+document.getElementById("mutation-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const payload = Object.fromEntries(formData.entries());
+
+  const errorEl = document.getElementById("error");
+  const resultsEl = document.getElementById("results");
+  errorEl.style.display = "none";
+  resultsEl.style.display = "none";
+
+  if (!payload.base_molecule || !payload.mutation) {
+    errorEl.textContent = "Please fill in both base molecule and mutation.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error("Server error");
+
+    const data = await res.json();
+    renderResults(data);
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = "Failed to analyze mutation. Please try again.";
+    errorEl.style.display = "block";
+  }
+});
+
+function renderResults(data) {
+  document.getElementById("summary").textContent = data.summary;
+
+  const keyList = document.getElementById("key-changes");
+  keyList.innerHTML = "";
+  const kc = data.key_changes || {};
+  const mapping = {
+    reactivity: "Reactivity",
+    acidity_basicity: "Acidity / Basicity",
+    sterics: "Steric effects",
+    electronics: "Electronic effects",
+    intermediate_stability: "Intermediate stability"
+  };
+
+  Object.entries(mapping).forEach(([key, label]) => {
+    if (kc[key]) {
+      const li = document.createElement("li");
+      li.textContent = `${label}: ${kc[key]}`;
+      keyList.appendChild(li);
+    }
+  });
+
+  document.getElementById("mech-before").textContent = data.mechanisms.before;
+  document.getElementById("mech-after").textContent = data.mechanisms.after;
+  document.getElementById("mech-comparison").textContent = data.mechanisms.comparison;
+
+  const exList = document.getElementById("example-reactions");
+  exList.innerHTML = "";
+  (data.example_reactions || []).forEach((ex) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${ex.description}</strong><br>
+      Before: ${ex.before_mutation_outcome}<br>
+      After: ${ex.after_mutation_outcome}`;
+    exList.appendChild(li);
+  });
+
+  document.getElementById("explain-simple").textContent =
+    data.explanation_levels.simple;
+  document.getElementById("explain-detailed").textContent =
+    data.explanation_levels.detailed;
+
+  document.getElementById("results").style.display = "block";
+}
