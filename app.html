@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Molecule Mutation Tool – Analyze Your Change</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Describe a base molecule and a mutation. The AI explains how the change affects reactivity, mechanisms, acidity, and stability."
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="logo">
+        <span class="logo-icon">🧪</span>
+        <span class="logo-text">Molecule Mutation Generator</span>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#how-it-works">How it works</a>
+        <a href="index.html#features">Features</a>
+        <a href="app.html" class="nav-cta">Try the tool</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-inner">
+        <h1>Molecule Mutation Tool</h1>
+        <p class="section-subtitle">
+          Describe a molecule and the change you want to make. The AI will show how that mutation affects
+          reactivity, acidity/basicity, sterics, electronics, and likely mechanisms.
+        </p>
+
+        <form id="mutation-form" class="example-block" style="margin-top: 1.5rem;">
+          <label class="example-label">
+            Base molecule
+          </label>
+          <textarea
+            name="base_molecule"
+            rows="3"
+            class="inline-mono"
+            placeholder="e.g., secondary alkyl bromide: CH3–CHBr–CH2–CH3"
+            required
+          ></textarea>
+
+          <label class="example-label" style="margin-top: 0.8rem;">
+            Mutation
+          </label>
+          <textarea
+            name="mutation"
+            rows="3"
+            class="inline-mono"
+            placeholder="e.g., replace Br with OTs; add a nitro group para to the methyl."
+            required
+          ></textarea>
+
+          <label class="example-label" style="margin-top: 0.8rem;">
+            Optional question / context
+          </label>
+          <textarea
+            name="question"
+            rows="2"
+            class="inline-mono"
+            placeholder="e.g., How does this affect SN1 vs SN2?"
+          ></textarea>
+
+          <div style="margin-top: 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary">Analyze mutation</button>
+            <span id="loading-indicator" class="inline-mono" style="font-size: 0.8rem; display:none;">
+              Analyzing…
+            </span>
+          </div>
+
+          <div id="error" class="error" style="display:none; margin-top: 0.75rem;"></div>
+        </form>
+
+        <section id="results" class="section" style="display:none; margin-top: 2rem;">
+          <div class="section-inner">
+            <h2>Analysis Result</h2>
+            <p id="summary"></p>
+
+            <h3 style="margin-top: 1.3rem;">Key changes</h3>
+            <ul id="key-changes" class="example-block"></ul>
+
+            <h3 style="margin-top: 1.3rem;">Mechanisms</h3>
+            <div class="example-block">
+              <p class="example-label">Before mutation</p>
+              <p id="mech-before"></p>
+
+              <p class="example-label">After mutation</p>
+              <p id="mech-after"></p>
+
+              <p class="example-label">Comparison</p>
+              <p id="mech-comparison"></p>
+            </div>
+
+            <h3 style="margin-top: 1.3rem;">Example reactions</h3>
+            <ul id="example-reactions" class="example-block"></ul>
+
+            <h3 style="margin-top: 1.3rem;">Explanations</h3>
+            <div class="example-block">
+              <details open>
+                <summary>Simple explanation</summary>
+                <p id="explain-simple" style="margin-top: 0.5rem;"></p>
+              </details>
+              <details style="margin-top: 0.75rem;">
+                <summary>Detailed explanation</summary>
+                <p id="explain-detailed" style="margin-top: 0.5rem;"></p>
+              </details>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>🧪 Molecule Mutation Generator</p>
+      <p class="footer-small">
+        Experimental tool. Do not use as a substitute for real lab safety or professional chemical advice.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
