@@ -4,64 +4,268 @@
   <meta charset="UTF-8" />
   <title>Molecule Mutation Generator – What Does This Change Do?</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Describe a molecule and a mutation, and an AI chemistry tutor explains how the change affects reactivity, mechanisms, acidity, stability, and more."
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="container">
-    <h1>🧪 Molecule Mutation Generator</h1>
-    <p>Describe a molecule and a change you want to make. The AI will tell you how it affects reactivity and mechanisms.</p>
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="logo">
+        <span class="logo-icon">🧪</span>
+        <span class="logo-text">Molecule Mutation Generator</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#example">Example</a>
+        <a href="#cta" class="nav-cta">Get notified</a>
+      </nav>
+    </div>
+  </header>
 
-    <form id="mutation-form">
-      <label>
-        Base molecule
-        <textarea name="base_molecule" rows="3"
-          placeholder="e.g., secondary alkyl bromide: CH3–CHBr–CH2–CH3"></textarea>
-      </label>
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <h1>“What happens if I change <span class="accent">this</span>?”</h1>
+          <p class="hero-subtitle">
+            Describe a molecule and a mutation.  
+            Let an AI organic chemistry tutor explain how it changes reactivity, mechanisms, acidity, stability, and more.
+          </p>
 
-      <label>
-        Mutation
-        <textarea name="mutation" rows="3"
-          placeholder="e.g., replace Br with OTs; or add a nitro group para to the methyl group."></textarea>
-      </label>
+          <div class="hero-actions">
+            <a href="#cta" class="btn btn-primary">Get early access</a>
+            <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
+          </div>
 
-      <label>
-        Optional question / context
-        <textarea name="question" rows="2"
-          placeholder="e.g., How does this affect SN1 vs SN2?"></textarea>
-      </label>
+          <p class="hero-note">
+            Built for orgo students, TAs, and chem nerds who want intuition, not just answers.
+          </p>
+        </div>
 
-      <button type="submit">Analyze Mutation</button>
-    </form>
+        <div class="hero-card">
+          <div class="card-header">
+            <span class="chip">Preview</span>
+            <h2>Mutation Insight</h2>
+          </div>
+          <div class="card-body">
+            <p class="card-label">Base molecule</p>
+            <p class="card-mono">secondary alkyl bromide: CH₃–CHBr–CH₂–CH₃</p>
 
-    <div id="error" class="error" style="display:none;"></div>
+            <p class="card-label">Mutation</p>
+            <p class="card-mono">replace Br with OTs</p>
 
-    <section id="results" style="display:none;">
-      <h2>Analysis Result</h2>
-      <p id="summary"></p>
+            <hr />
 
-      <h3>Key Changes</h3>
-      <ul id="key-changes"></ul>
+            <p class="card-label">Key change (summary)</p>
+            <p class="card-text">
+              Better leaving group → faster ionization, stronger SN1 character, and increased likelihood of carbocation rearrangements.
+            </p>
 
-      <h3>Mechanisms</h3>
-      <p><strong>Before mutation:</strong> <span id="mech-before"></span></p>
-      <p><strong>After mutation:</strong> <span id="mech-after"></span></p>
-      <p><strong>Comparison:</strong> <span id="mech-comparison"></span></p>
+            <p class="card-label">Mechanism shift</p>
+            <ul class="card-list">
+              <li>SN2 pathways become less favored at crowded centers</li>
+              <li>SN1 and E1 are accelerated under polar protic conditions</li>
+              <li>Carbocation stability controls regiochemistry of substitution</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <h3>Example Reactions</h3>
-      <ul id="example-reactions"></ul>
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="section">
+      <div class="section-inner">
+        <h2>How it works</h2>
+        <p class="section-subtitle">
+          Turn “I wonder what this change does…” into clear, mechanistic insight.
+        </p>
 
-      <h3>Explanations</h3>
-      <details open>
-        <summary>Simple</summary>
-        <p id="explain-simple"></p>
-      </details>
-      <details>
-        <summary>Detailed</summary>
-        <p id="explain-detailed"></p>
-      </details>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Describe your molecule</h3>
+            <p>
+              Use plain language or IUPAC-style names:  
+              <span class="inline-mono">“benzene with a methyl group (toluene)”</span>  
+              or  
+              <span class="inline-mono">“4-bromobut-1-ene”</span>.
+            </p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Describe the mutation</h3>
+            <p>
+              Example: <span class="inline-mono">“add a nitro group para to the methyl”</span>  
+              or <span class="inline-mono">“change OH to a carbonyl”</span>.
+            </p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Ask what you care about</h3>
+            <p>
+              Focus the analysis:  
+              <span class="inline-mono">“How does this affect SN1 vs SN2?”</span>  
+              or  
+              <span class="inline-mono">“Does this make the molecule more acidic?”</span>.
+            </p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">4</div>
+            <h3>Get an AI chem tutor answer</h3>
+            <p>
+              The tool breaks down changes in reactivity, sterics, electronics, acidity/basicity, and likely mechanisms in multiple explanation levels.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section section-alt">
+      <div class="section-inner">
+        <h2>What makes it different?</h2>
+        <p class="section-subtitle">
+          Not another “product predictor” — a reactivity intuition builder.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature">
+            <h3>Reactivity intuition</h3>
+            <p>
+              See how electronic and steric changes push a molecule toward SN1, SN2, E1, E2, addition, or rearrangement pathways.
+            </p>
+          </div>
+
+          <div class="feature">
+            <h3>Mechanism comparison</h3>
+            <p>
+              “Before vs after” mechanism descriptions highlight which steps change, which intermediates stabilize, and where new pathways open up.
+            </p>
+          </div>
+
+          <div class="feature">
+            <h3>Acidity & basicity shifts</h3>
+            <p>
+              Understand how EWGs, EDGs, and resonance changes move pKa and alter which sites get deprotonated first.
+            </p>
+          </div>
+
+          <div class="feature">
+            <h3>Multiple explanation levels</h3>
+            <p>
+              One simple explanation for tired brains, one detailed explanation for exam prep and deep understanding.
+            </p>
+          </div>
+
+          <div class="feature">
+            <h3>Example reactions</h3>
+            <p>
+              Concrete “before vs after” reaction scenarios show how the same conditions behave differently after your mutation.
+            </p>
+          </div>
+
+          <div class="feature">
+            <h3>Built for students & TAs</h3>
+            <p>
+              Use it to check your intuition, design practice problems, or explain subtle trends in recitation sessions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAMPLE -->
+    <section id="example" class="section">
+      <div class="section-inner example-layout">
+        <div>
+          <h2>Example mutation</h2>
+          <p class="section-subtitle">
+            From “just memorizing” to “oh, that actually makes sense.”
+          </p>
+
+          <div class="example-block">
+            <h3>Input</h3>
+            <p class="example-label">Base molecule</p>
+            <p class="inline-mono">
+              benzene with a methyl group (toluene)
+            </p>
+
+            <p class="example-label">Mutation</p>
+            <p class="inline-mono">
+              add a nitro group meta to the methyl group
+            </p>
+
+            <p class="example-label">Question</p>
+            <p class="inline-mono">
+              How does this affect electrophilic aromatic substitution?
+            </p>
+          </div>
+        </div>
+
+        <div class="example-block example-output">
+          <h3>Output (shortened)</h3>
+          <p class="example-label">Summary</p>
+          <p>
+            The nitro group is a strong electron-withdrawing, meta-directing substituent.
+            Adding it to toluene creates competing directing effects: the methyl group
+            pushes reactivity to ortho/para, while the nitro group pulls reactivity away
+            from its own ortho/para positions and toward meta.
+          </p>
+
+          <p class="example-label">Key changes</p>
+          <ul>
+            <li>Overall ring becomes less reactive than toluene alone</li>
+            <li>Electrophilic attack is biased away from the nitro group</li>
+            <li>Regiochemistry becomes less straightforward, with mixed substitution patterns</li>
+          </ul>
+
+          <p class="example-label">Simple explanation</p>
+          <p>
+            The nitro group “steals” electron density and makes the ring pickier.  
+            The methyl group still “pushes” some reactivity, but the nitro group
+            strongly resists substitution near itself.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta" class="section section-cta">
+      <div class="section-inner cta-inner">
+        <div>
+          <h2>Be the first to try it</h2>
+          <p class="section-subtitle">
+            I’m building the first version now. Drop your email if you want early access, or just bookmark this page and check back soon.
+          </p>
+        </div>
+        <form class="cta-form" onsubmit="event.preventDefault(); alert('This is just a static demo form for now.');">
+          <input
+            type="email"
+            placeholder="your.email@example.com"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Get early access</button>
+        </form>
+      </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>🧪 Molecule Mutation Generator – “What Does This Change Do?”</p>
+      <p class="footer-small">
+        Built for organic chemistry students, TAs, and anyone who loves mechanisms.
+      </p>
+    </div>
+  </footer>
 </body>
 </html>
+
