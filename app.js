@@ -1,5 +1,5 @@
-// TODO: replace with your real Render backend URL
-const API_URL = "https://molecule-mutation-backend.onrender.com";
+// Backend endpoint on Render
+const API_URL = "https://molecule-mutation-backend.onrender.com/api/mutation-analysis";
 
 const form = document.getElementById("mutation-form");
 const loadingEl = document.getElementById("loading-indicator");
@@ -31,17 +31,29 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Server error: ${res.status} ${text}`);
+    const rawText = await res.text();
+    console.log("Raw response from backend:", rawText);
+
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      throw new Error(
+        `Backend returned non-JSON. Status ${res.status}. Body: ${rawText}`
+      );
     }
 
-    const data = await res.json();
+    if (!res.ok) {
+      const msg =
+        data.error || data.message || `Server error ${res.status}.`;
+      throw new Error(msg);
+    }
+
     renderResults(data);
   } catch (err) {
-    console.error(err);
+    console.error("Frontend error:", err);
     errorEl.textContent =
-      "Failed to analyze mutation. Please try again or check the console for details.";
+      "Failed to analyze mutation: " + (err.message || "Unknown error.");
     errorEl.style.display = "block";
   } finally {
     loadingEl.style.display = "none";
