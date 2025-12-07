@@ -10,6 +10,8 @@
     content="Describe a base molecule and a mutation. The AI explains how the change affects reactivity, mechanisms, acidity, and stability."
   />
   <link rel="stylesheet" href="style.css" />
+  <!-- SmilesDrawer library for rendering SMILES to structures -->
+  <script src="https://unpkg.com/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script>
 </head>
 <body>
   <header class="nav">
@@ -59,6 +61,18 @@
             required
           ></textarea>
 
+          <!-- 🧪 NEW: Optional SMILES input for structure rendering -->
+          <label class="example-label" style="margin-top: 0.8rem;">
+            Optional SMILES (for structure drawing)
+          </label>
+          <input
+            type="text"
+            name="smiles"
+            id="smiles-input"
+            class="inline-mono"
+            placeholder="e.g., CC(=O)Oc1ccccc1C(=O)O"
+          />
+
           <label class="example-label" style="margin-top: 0.8rem;">
             Optional question / context
           </label>
@@ -83,6 +97,22 @@
           <div class="section-inner">
             <h2>Analysis Result</h2>
             <p id="summary"></p>
+
+            <!-- 🧪 NEW: Structure rendering block -->
+            <h3 style="margin-top: 1.3rem;">Structure (from SMILES)</h3>
+            <div class="example-block" style="display: inline-block;">
+              <canvas
+                id="smiles-canvas"
+                width="320"
+                height="320"
+                style="border: 1px solid #ddd; border-radius: 8px;"
+              ></canvas>
+              <p
+                id="smiles-error"
+                class="error"
+                style="display: none; margin-top: 0.5rem; font-size: 0.85rem;"
+              ></p>
+            </div>
 
             <h3 style="margin-top: 1.3rem;">Key changes</h3>
             <ul id="key-changes" class="example-block"></ul>
