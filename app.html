@@ -96,15 +96,15 @@
             <h2>Analysis Result</h2>
             <p id="summary"></p>
 
-            <!-- 🧪 Structure rendering block -->
+            <!-- 🧪 Structure rendering block (SVG instead of canvas) -->
             <h3 style="margin-top: 1.3rem;">Structure (from SMILES)</h3>
             <div class="example-block" style="display: inline-block;">
-              <canvas
-                id="smiles-canvas"
+              <svg
+                id="smiles-svg"
                 width="320"
                 height="320"
                 style="border: 1px solid #ddd; border-radius: 8px;"
-              ></canvas>
+              ></svg>
               <p
                 id="smiles-error"
                 class="error"
@@ -156,12 +156,12 @@
     </div>
   </footer>
 
-  <!-- SmilesDrawer library for rendering SMILES to structures (legacy v1 API) -->
-  <script src="https://unpkg.com/smiles-drawer@1.0.5/dist/smiles-drawer.min.js"></script>
+  <!-- SmilesDrawer library (use a stable 1.x that matches README examples) -->
+  <script src="https://unpkg.com/smiles-drawer@1.0.10/dist/smiles-drawer.min.js"></script>
 
-  <!-- Initialize SmilesDrawer and expose a helper for app.js -->
+  <!-- Initialize SmilesDrawer SVG drawer and expose a helper for app.js -->
   <script>
-    let smilesDrawer = null;
+    let svgDrawer = null;
 
     document.addEventListener("DOMContentLoaded", function () {
       const options = {
@@ -170,31 +170,34 @@
       };
 
       if (window.SmilesDrawer) {
-        smilesDrawer = new SmilesDrawer.Drawer(options);
-        console.log("SmilesDrawer Drawer initialized:", smilesDrawer);
+        // Use the SVG drawer instead of the canvas drawer
+        svgDrawer = new SmilesDrawer.SvgDrawer(options);
+        console.log("SmilesDrawer SvgDrawer initialized:", svgDrawer);
       } else {
         console.error("SmilesDrawer failed to load.");
       }
     });
 
     // Global helper function that app.js can call
+    // (name kept the same for compatibility)
     window.renderSmilesToCanvas = function (smiles) {
-      if (!smilesDrawer || !window.SmilesDrawer) return;
+      if (!svgDrawer || !window.SmilesDrawer) return;
 
-      const canvasId = "smiles-canvas";
-      const canvas = document.getElementById(canvasId);
+      const svgEl = document.getElementById("smiles-svg");
       const errEl = document.getElementById("smiles-error");
 
-      if (!canvas) return;
+      if (!svgEl) return;
 
-      // Clear any previous error
+      // Clear previous error
       if (errEl) {
         errEl.style.display = "none";
         errEl.textContent = "";
       }
 
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Clear previous SVG content
+      while (svgEl.firstChild) {
+        svgEl.removeChild(svgEl.firstChild);
+      }
 
       const clean = (smiles || "").trim();
       if (!clean) {
@@ -202,16 +205,16 @@
         return;
       }
 
-      console.log("Trying to draw SMILES:", clean);
+      console.log("Trying to draw SMILES (SVG):", clean);
 
       SmilesDrawer.parse(
         clean,
         function (tree) {
-          // Legacy v1 API: draw to canvas by its ID
-          smilesDrawer.draw(tree, canvasId, "light", false);
+          // Draw into the SVG element by its ID
+          svgDrawer.draw(tree, "smiles-svg", "light", false);
         },
         function (err) {
-          console.error("SmilesDrawer parse error:", err);
+          console.error("SmilesDrawer parse/draw error:", err);
           if (errEl) {
             errEl.textContent =
               "Could not parse SMILES. Please check the string.";
