@@ -6,6 +6,58 @@ const loadingEl = document.getElementById("loading-indicator");
 const errorEl = document.getElementById("error");
 const resultsSection = document.getElementById("results");
 
+// Elements for SMILES rendering
+const smilesCanvas = document.getElementById("smiles-canvas");
+const smilesErrorEl = document.getElementById("smiles-error");
+const smilesInput = document.getElementById("smiles-input");
+
+// Initialize SmilesDrawer drawer (if library is loaded)
+let smilesDrawer = null;
+if (window.SmilesDrawer) {
+  smilesDrawer = new SmilesDrawer.Drawer({
+    width: smilesCanvas ? smilesCanvas.width : 320,
+    height: smilesCanvas ? smilesCanvas.height : 320,
+  });
+}
+
+// Helper: draw a SMILES string (if provided)
+function drawSmiles(smiles) {
+  if (!smilesCanvas || !smilesDrawer) return;
+
+  // Clear any previous error
+  if (smilesErrorEl) {
+    smilesErrorEl.style.display = "none";
+    smilesErrorEl.textContent = "";
+  }
+
+  // Clear canvas
+  const ctx = smilesCanvas.getContext("2d");
+  ctx.clearRect(0, 0, smilesCanvas.width, smilesCanvas.height);
+
+  if (!smiles || !smiles.trim()) {
+    // Nothing to draw
+    return;
+  }
+
+  const cleanSmiles = smiles.trim();
+
+  // Parse and draw using SmilesDrawer
+  SmilesDrawer.parse(
+    cleanSmiles,
+    (tree) => {
+      smilesDrawer.draw(tree, "smiles-canvas", "light", false);
+    },
+    (err) => {
+      console.error("SmilesDrawer parse error:", err);
+      if (smilesErrorEl) {
+        smilesErrorEl.textContent =
+          "Could not parse SMILES. Please check the string.";
+        smilesErrorEl.style.display = "block";
+      }
+    }
+  );
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -24,11 +76,14 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  // Capture SMILES here so we can use it after the fetch
+  const smiles = payload.smiles || "";
+
   try {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload), // backend ignores extra fields like "smiles"
     });
 
     const rawText = await res.text();
@@ -44,12 +99,11 @@ form.addEventListener("submit", async (e) => {
     }
 
     if (!res.ok) {
-      const msg =
-        data.error || data.message || `Server error ${res.status}.`;
+      const msg = data.error || data.message || `Server error ${res.status}.`;
       throw new Error(msg);
     }
 
-    renderResults(data);
+    renderResults(data, smiles);
   } catch (err) {
     console.error("Frontend error:", err);
     errorEl.textContent =
@@ -60,9 +114,12 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function renderResults(data) {
+function renderResults(data, smiles) {
   // Summary
   document.getElementById("summary").textContent = data.summary || "";
+
+  // Draw SMILES-based structure (if provided)
+  drawSmiles(smiles);
 
   // Key changes
   const keyList = document.getElementById("key-changes");
