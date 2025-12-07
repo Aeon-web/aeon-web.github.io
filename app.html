@@ -37,12 +37,11 @@
           and will attempt to predict the structure after the mutation.
         </p>
 
+        <!-- IMPORTANT: form has id="mutation-form" and NO action / method -->
         <form
           id="mutation-form"
           class="example-block"
           style="margin-top: 1.5rem;"
-          method="POST"
-          action="javascript:void(0);"
         >
           <label class="example-label">
             Base molecule
@@ -66,7 +65,7 @@
             required
           ></textarea>
 
-          <!-- 🧪 Optional SMILES input for base structure rendering -->
+          <!-- Optional SMILES input for base structure rendering -->
           <label class="example-label" style="margin-top: 0.8rem;">
             Optional SMILES for base molecule (for drawing)
           </label>
@@ -99,12 +98,12 @@
         </form>
 
         <!-- Results section -->
-        <section id="results" class="section" style="margin-top: 2rem;">
+        <section id="results" class="section" style="margin-top: 2rem; display:none;">
           <div class="section-inner">
             <h2>Analysis Result</h2>
             <p id="summary"></p>
 
-            <!-- 🧪 Structures -->
+            <!-- Structures -->
             <h3 style="margin-top: 1.3rem;">Structures</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
               <!-- Before -->
@@ -205,7 +204,7 @@
     </div>
   </footer>
 
- <!-- SmilesDrawer library -->
+  <!-- SmilesDrawer library -->
   <script src="https://unpkg.com/smiles-drawer@1.0.10/dist/smiles-drawer.min.js"></script>
 
   <!-- Initialize SmilesDrawer and expose a helper for app.js -->
@@ -259,7 +258,7 @@
         clean,
         function (tree) {
           try {
-            // Use default light theme (no custom gradients/colors)
+            // Use default light theme (no custom gradients / colors)
             smilesDrawer.draw(tree, canvasId, "light", false);
           } catch (drawErr) {
             console.error("SmilesDrawer draw error:", drawErr);
@@ -281,7 +280,7 @@
     };
   </script>
 
-
+  <!-- Your main app logic -->
   <script src="app.js"></script>
 </body>
 </html>
