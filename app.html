@@ -10,8 +10,6 @@
     content="Describe a base molecule and a mutation. The AI explains how the change affects reactivity, mechanisms, acidity, and stability."
   />
   <link rel="stylesheet" href="style.css" />
-  <!-- SmilesDrawer library for rendering SMILES to structures -->
-  <script src="https://unpkg.com/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script>
 </head>
 <body>
   <header class="nav">
@@ -61,7 +59,7 @@
             required
           ></textarea>
 
-          <!-- 🧪 NEW: Optional SMILES input for structure rendering -->
+          <!-- 🧪 Optional SMILES input for structure rendering -->
           <label class="example-label" style="margin-top: 0.8rem;">
             Optional SMILES (for structure drawing)
           </label>
@@ -98,7 +96,7 @@
             <h2>Analysis Result</h2>
             <p id="summary"></p>
 
-            <!-- 🧪 NEW: Structure rendering block -->
+            <!-- 🧪 Structure rendering block -->
             <h3 style="margin-top: 1.3rem;">Structure (from SMILES)</h3>
             <div class="example-block" style="display: inline-block;">
               <canvas
@@ -157,6 +155,72 @@
       </p>
     </div>
   </footer>
+
+  <!-- SmilesDrawer library for rendering SMILES to structures -->
+  <script src="https://cdn.jsdelivr.net/npm/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script>
+
+  <!-- Initialize SmilesDrawer and expose a helper for app.js -->
+  <script>
+    let smilesDrawer = null;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const options = {
+        width: 320,
+        height: 320,
+      };
+
+      if (window.SmilesDrawer) {
+        smilesDrawer = new SmilesDrawer.Drawer(options);
+        console.log("SmilesDrawer Drawer initialized:", smilesDrawer);
+      } else {
+        console.error("SmilesDrawer failed to load.");
+      }
+    });
+
+    // Global helper function that app.js can call
+    window.renderSmilesToCanvas = function (smiles) {
+      if (!smilesDrawer || !window.SmilesDrawer) return;
+
+      const canvasId = "smiles-canvas";
+      const canvas = document.getElementById(canvasId);
+      const errEl = document.getElementById("smiles-error");
+
+      if (!canvas) return;
+
+      // Clear any previous error
+      if (errEl) {
+        errEl.style.display = "none";
+        errEl.textContent = "";
+      }
+
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const clean = (smiles || "").trim();
+      if (!clean) {
+        // nothing to draw
+        return;
+      }
+
+      console.log("Trying to draw SMILES:", clean);
+
+      SmilesDrawer.parse(
+        clean,
+        function (tree) {
+          // Draw to the canvas using its ID (matches official examples)
+          smilesDrawer.draw(tree, canvasId, "light", false);
+        },
+        function (err) {
+          console.error("SmilesDrawer parse error:", err);
+          if (errEl) {
+            errEl.textContent =
+              "Could not parse SMILES. Please check the string.";
+            errEl.style.display = "block";
+          }
+        }
+      );
+    };
+  </script>
 
   <script src="app.js"></script>
 </body>
