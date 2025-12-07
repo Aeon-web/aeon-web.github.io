@@ -20,12 +20,17 @@ function drawSmiles(smiles, canvasId, errorId) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  console.log("🔹 Submit handler fired");
+
   errorEl.style.display = "none";
   errorEl.textContent = "";
+  resultsSection.style.display = "none";
   loadingEl.style.display = "inline-block";
 
   const formData = new FormData(form);
   const payload = Object.fromEntries(formData.entries());
+
+  console.log("🔹 Payload about to send:", payload);
 
   if (!payload.base_molecule || !payload.mutation) {
     loadingEl.style.display = "none";
@@ -38,6 +43,8 @@ form.addEventListener("submit", async (e) => {
   const userSmiles = payload.smiles || "";
 
   try {
+    console.log("🔹 Calling fetch:", API_URL);
+
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,7 +52,7 @@ form.addEventListener("submit", async (e) => {
     });
 
     const rawText = await res.text();
-    console.log("Raw response from backend:", rawText);
+    console.log("🔹 Raw response from backend:", rawText);
 
     let data;
     try {
@@ -73,6 +80,11 @@ form.addEventListener("submit", async (e) => {
 });
 
 function renderResults(data, userSmiles) {
+  console.log("🔹 Rendering results:", data);
+
+  // Show results section
+  resultsSection.style.display = "block";
+
   // Summary
   document.getElementById("summary").textContent = data.summary || "";
 
@@ -136,7 +148,7 @@ function renderResults(data, userSmiles) {
     exList.appendChild(li);
   });
 
-  // 🧪 Structures: use user SMILES if given, otherwise AI base guess
+  // Structures: use user SMILES if given, otherwise AI base guess
   const structures = data.structures || {};
   const baseSmiles =
     (userSmiles && userSmiles.trim()) ||
@@ -147,18 +159,22 @@ function renderResults(data, userSmiles) {
   console.log("Base SMILES used for drawing:", baseSmiles);
   console.log("Mutated SMILES used for drawing:", mutatedSmiles);
 
-  // Clear + draw base
   if (baseSmiles) {
     drawSmiles(baseSmiles, "smiles-canvas-before", "smiles-error-before");
   } else {
     drawSmiles("", "smiles-canvas-before", "smiles-error-before");
   }
 
-  // Clear + draw mutated
   if (mutatedSmiles) {
     drawSmiles(mutatedSmiles, "smiles-canvas-after", "smiles-error-after");
   } else {
     drawSmiles("", "smiles-canvas-after", "smiles-error-after");
   }
+
+  // Explanations
+  document.getElementById("explain-simple").textContent =
+    data.explanation_levels?.simple || "";
+  document.getElementById("explain-detailed").textContent =
+    data.explanation_levels?.detailed || "";
 }
 
