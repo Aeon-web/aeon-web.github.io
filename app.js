@@ -64,7 +64,7 @@ form.addEventListener("submit", async (e) => {
   } catch (err) {
     console.error("Frontend error:", err);
     errorEl.textContent =
-      "Failed to analyze mutation: " + (err.message || "Unknown error.";
+      "Failed to analyze mutation: " + (err.message || "Unknown error.");
     errorEl.style.display = "block";
   } finally {
     loadingEl.style.display = "none";
