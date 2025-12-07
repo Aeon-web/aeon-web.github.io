@@ -205,7 +205,7 @@
     </div>
   </footer>
 
-  <!-- SmilesDrawer library -->
+ <!-- SmilesDrawer library -->
   <script src="https://unpkg.com/smiles-drawer@1.0.10/dist/smiles-drawer.min.js"></script>
 
   <!-- Initialize SmilesDrawer and expose a helper for app.js -->
@@ -214,26 +214,11 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       if (window.SmilesDrawer) {
-        // High-contrast custom theme on a white background
+        // Use default built-in theme, just set size
         smilesDrawer = new SmilesDrawer.Drawer({
           width: 320,
           height: 320,
-          themes: {
-            darkcanvas: {
-              background: '#FFFFFF',
-              bond: '#000000',
-              carbon: '#000000',
-              atomColors: {
-                O: '#FF0000',
-                N: '#0000FF',
-                S: '#FFC800',
-                F: '#00AA00',
-                Cl: '#00AA00',
-                Br: '#A52A2A'
-              }
-            }
-          },
-          drawBackground: true
+          padding: 10
         });
         console.log("SmilesDrawer Drawer initialized:", smilesDrawer);
       } else {
@@ -257,11 +242,14 @@
       }
 
       const ctx = canvas.getContext("2d");
-      // Clear previous drawing
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Always paint a white background
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const clean = (smiles || "").trim();
       if (!clean) {
+        // nothing to draw
         return;
       }
 
@@ -271,7 +259,8 @@
         clean,
         function (tree) {
           try {
-            smilesDrawer.draw(tree, canvasId, "darkcanvas", false);
+            // Use default light theme (no custom gradients/colors)
+            smilesDrawer.draw(tree, canvasId, "light", false);
           } catch (drawErr) {
             console.error("SmilesDrawer draw error:", drawErr);
             if (errEl) {
@@ -291,6 +280,7 @@
       );
     };
   </script>
+
 
   <script src="app.js"></script>
 </body>
