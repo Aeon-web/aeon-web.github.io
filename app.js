@@ -1,18 +1,19 @@
 // Backend endpoint on Render
-const API_URL = "https://molecule-mutation-backend.onrender.com/api/mutation-analysis";
+const API_URL =
+  "https://molecule-mutation-backend.onrender.com/api/mutation-analysis";
 
 const form = document.getElementById("mutation-form");
 const loadingEl = document.getElementById("loading-indicator");
 const errorEl = document.getElementById("error");
 const resultsSection = document.getElementById("results");
 
-// Optional SMILES input element (not strictly needed, but handy)
+// Optional SMILES input element
 const smilesInput = document.getElementById("smiles-input");
 
 // Helper: draw a SMILES string using the global helper from app.html
-function drawSmiles(smiles) {
+function drawSmiles(smiles, canvasId, errorId) {
   if (typeof window.renderSmilesToCanvas === "function") {
-    window.renderSmilesToCanvas(smiles);
+    window.renderSmilesToCanvas(smiles, canvasId, errorId);
   }
 }
 
@@ -33,14 +34,14 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Capture SMILES here so we can use it after the fetch
-  const smiles = payload.smiles || "";
+  // Capture user-provided SMILES for base molecule
+  const userSmiles = payload.smiles || "";
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload), // backend ignores extra fields like "smiles"
+      body: JSON.stringify(payload),
     });
 
     const rawText = await res.text();
@@ -60,7 +61,7 @@ form.addEventListener("submit", async (e) => {
       throw new Error(msg);
     }
 
-    renderResults(data, smiles);
+    renderResults(data, userSmiles);
   } catch (err) {
     console.error("Frontend error:", err);
     errorEl.textContent =
@@ -71,9 +72,25 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function renderResults(data, smiles) {
+function renderResults(data, userSmiles) {
   // Summary
   document.getElementById("summary").textContent = data.summary || "";
+
+  // IUPAC names
+  const iupac = data.iupac_names || {};
+  const iupacBeforeEl = document.getElementById("iupac-before");
+  const iupacAfterEl = document.getElementById("iupac-after");
+  const iupacNotesEl = document.getElementById("iupac-notes");
+
+  if (iupacBeforeEl) {
+    iupacBeforeEl.textContent = iupac.before || "Not available / ambiguous.";
+  }
+  if (iupacAfterEl) {
+    iupacAfterEl.textContent = iupac.after || "Not available / ambiguous.";
+  }
+  if (iupacNotesEl) {
+    iupacNotesEl.textContent = iupac.notes || "";
+  }
 
   // Key changes
   const keyList = document.getElementById("key-changes");
@@ -119,16 +136,29 @@ function renderResults(data, smiles) {
     exList.appendChild(li);
   });
 
-  // Explanations
-  document.getElementById("explain-simple").textContent =
-    data.explanation_levels?.simple || "";
-  document.getElementById("explain-detailed").textContent =
-    data.explanation_levels?.detailed || "";
+  // 🧪 Structures: use user SMILES if given, otherwise AI base guess
+  const structures = data.structures || {};
+  const baseSmiles =
+    (userSmiles && userSmiles.trim()) ||
+    structures.base_smiles_guess ||
+    "";
+  const mutatedSmiles = structures.mutated_smiles_guess || "";
 
-  // At this point, the canvas is visible and sized.
-  // Now draw the SMILES structure (if provided).
-  if (smiles && smiles.trim()) {
-    drawSmiles(smiles);
+  console.log("Base SMILES used for drawing:", baseSmiles);
+  console.log("Mutated SMILES used for drawing:", mutatedSmiles);
+
+  // Clear + draw base
+  if (baseSmiles) {
+    drawSmiles(baseSmiles, "smiles-canvas-before", "smiles-error-before");
+  } else {
+    drawSmiles("", "smiles-canvas-before", "smiles-error-before");
+  }
+
+  // Clear + draw mutated
+  if (mutatedSmiles) {
+    drawSmiles(mutatedSmiles, "smiles-canvas-after", "smiles-error-after");
+  } else {
+    drawSmiles("", "smiles-canvas-after", "smiles-error-after");
   }
 }
 
