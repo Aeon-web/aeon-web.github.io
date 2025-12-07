@@ -76,9 +76,6 @@ function renderResults(data, smiles) {
   // Summary
   document.getElementById("summary").textContent = data.summary || "";
 
-  // Draw SMILES-based structure (if provided)
-  drawSmiles(smiles);
-
   // Key changes
   const keyList = document.getElementById("key-changes");
   keyList.innerHTML = "";
@@ -129,6 +126,12 @@ function renderResults(data, smiles) {
   document.getElementById("explain-detailed").textContent =
     data.explanation_levels?.detailed || "";
 
+  // 👉 First show the results section so the canvas has real dimensions
   resultsSection.style.display = "block";
+
+  // 👉 Then draw the SMILES (after layout)
+  if (smiles && smiles.trim()) {
+    setTimeout(() => drawSmiles(smiles), 0);
+  }
 }
 
