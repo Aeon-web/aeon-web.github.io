@@ -113,7 +113,7 @@
                 style="
                   border: 1px solid #ddd;
                   border-radius: 8px;
-                  background-color: #ffffff; /* 🔥 Force white background */
+                  background-color: #ffffff; /* white background */
                 "
               ></canvas>
               <p
@@ -175,14 +175,28 @@
     let smilesDrawer = null;
 
     document.addEventListener("DOMContentLoaded", function () {
-      const options = {
-        width: 320,
-        height: 320,
-      };
-
       if (window.SmilesDrawer) {
-        // Canvas drawer (matches docs)
-        smilesDrawer = new SmilesDrawer.Drawer(options);
+        // High-contrast custom theme on a white background
+        smilesDrawer = new SmilesDrawer.Drawer({
+          width: 320,
+          height: 320,
+          themes: {
+            darkcanvas: {
+              background: '#FFFFFF',
+              bond: '#000000',
+              carbon: '#000000',
+              atomColors: {
+                O: '#FF0000',
+                N: '#0000FF',
+                S: '#FFC800',
+                F: '#00AA00',
+                Cl: '#00AA00',
+                Br: '#A52A2A'
+              }
+            }
+          },
+          drawBackground: true
+        });
         console.log("SmilesDrawer Drawer initialized:", smilesDrawer);
       } else {
         console.error("SmilesDrawer failed to load.");
@@ -206,10 +220,8 @@
       }
 
       const ctx = canvas.getContext("2d");
-
-      // Clear previous drawing (lines, etc.)
+      // Clear previous drawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Canvas CSS background-color is already white from the style attribute
 
       const clean = (smiles || "").trim();
       if (!clean) {
@@ -223,8 +235,8 @@
         clean,
         function (tree) {
           try {
-            // Draw to the canvas using its ID (official pattern)
-            smilesDrawer.draw(tree, canvasId, "light", false);
+            // Use the custom high-contrast theme
+            smilesDrawer.draw(tree, canvasId, "darkcanvas", false);
           } catch (drawErr) {
             console.error("SmilesDrawer draw error:", drawErr);
             if (errEl) {
