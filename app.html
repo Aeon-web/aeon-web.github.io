@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Molecule Mutation Tool – Analyze Your Change</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- this is app.html -->
   <meta
     name="description"
     content="Describe a base molecule and a mutation. The AI explains how the change affects reactivity, mechanisms, acidity, and stability."
@@ -70,15 +71,15 @@
 
           <div style="margin-top: 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
             <button type="submit" class="btn btn-primary">Analyze mutation</button>
-            <span id="loading-indicator" class="inline-mono" style="font-size: 0.8rem; display:none;">
+            <span id="loading-indicator" class="inline-mono" style="font-size: 0.8rem; display: none;">
               Analyzing…
             </span>
           </div>
 
-          <div id="error" class="error" style="display:none; margin-top: 0.75rem;"></div>
+          <div id="error" class="error" style="display: none; margin-top: 0.75rem;"></div>
         </form>
 
-        <section id="results" class="section" style="display:none; margin-top: 2rem;">
+        <section id="results" class="section" style="display: none; margin-top: 2rem;">
           <div class="section-inner">
             <h2>Analysis Result</h2>
             <p id="summary"></p>
