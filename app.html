@@ -156,8 +156,8 @@
     </div>
   </footer>
 
-  <!-- SmilesDrawer library for rendering SMILES to structures -->
-  <script src="https://cdn.jsdelivr.net/npm/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script>
+  <!-- SmilesDrawer library for rendering SMILES to structures (legacy v1 API) -->
+  <script src="https://unpkg.com/smiles-drawer@1.0.5/dist/smiles-drawer.min.js"></script>
 
   <!-- Initialize SmilesDrawer and expose a helper for app.js -->
   <script>
@@ -207,7 +207,7 @@
       SmilesDrawer.parse(
         clean,
         function (tree) {
-          // Draw to the canvas using its ID (matches official examples)
+          // Legacy v1 API: draw to canvas by its ID
           smilesDrawer.draw(tree, canvasId, "light", false);
         },
         function (err) {
