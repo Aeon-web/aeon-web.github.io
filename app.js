@@ -21,7 +21,6 @@ form.addEventListener("submit", async (e) => {
 
   errorEl.style.display = "none";
   errorEl.textContent = "";
-  resultsSection.style.display = "none";
   loadingEl.style.display = "inline-block";
 
   const formData = new FormData(form);
@@ -65,7 +64,7 @@ form.addEventListener("submit", async (e) => {
   } catch (err) {
     console.error("Frontend error:", err);
     errorEl.textContent =
-      "Failed to analyze mutation: " + (err.message || "Unknown error.");
+      "Failed to analyze mutation: " + (err.message || "Unknown error.";
     errorEl.style.display = "block";
   } finally {
     loadingEl.style.display = "none";
@@ -126,12 +125,10 @@ function renderResults(data, smiles) {
   document.getElementById("explain-detailed").textContent =
     data.explanation_levels?.detailed || "";
 
-  // 👉 First show the results section so the canvas has real dimensions
-  resultsSection.style.display = "block";
-
-  // 👉 Then draw the SMILES (after layout)
+  // At this point, the canvas is visible and sized.
+  // Now draw the SMILES structure (if provided).
   if (smiles && smiles.trim()) {
-    setTimeout(() => drawSmiles(smiles), 0);
+    drawSmiles(smiles);
   }
 }
 
