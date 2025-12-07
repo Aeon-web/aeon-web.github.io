@@ -36,8 +36,13 @@
           reactivity, acidity/basicity, sterics, electronics, and likely mechanisms.
         </p>
 
-        <form id="mutation-form" class="example-block" style="margin-top: 1.5rem;" method="POST" action="javascript:void(0);">
-
+        <form
+          id="mutation-form"
+          class="example-block"
+          style="margin-top: 1.5rem;"
+          method="POST"
+          action="javascript:void(0);"
+        >
           <label class="example-label">
             Base molecule
           </label>
@@ -92,7 +97,7 @@
           <div id="error" class="error" style="display: none; margin-top: 0.75rem;"></div>
         </form>
 
-        <!-- ❗ Keep results section always visible so the canvas has real dimensions -->
+        <!-- Results section always visible so canvas has real dimensions -->
         <section id="results" class="section" style="margin-top: 2rem;">
           <div class="section-inner">
             <h2>Analysis Result</h2>
@@ -105,7 +110,11 @@
                 id="smiles-canvas"
                 width="320"
                 height="320"
-                style="border: 1px solid #ddd; border-radius: 8px;"
+                style="
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  background-color: #ffffff; /* 🔥 Force white background */
+                "
               ></canvas>
               <p
                 id="smiles-error"
@@ -198,13 +207,9 @@
 
       const ctx = canvas.getContext("2d");
 
-      // Fill background white
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Clear previous paths (optional)
-      ctx.clearRect(0, 0, 0, 0); 
-
+      // Clear previous drawing (lines, etc.)
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Canvas CSS background-color is already white from the style attribute
 
       const clean = (smiles || "").trim();
       if (!clean) {
