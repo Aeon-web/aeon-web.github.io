@@ -39,7 +39,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Capture user-provided SMILES for base molecule
+  // Capture user-provided SMILES for base molecule (if present)
   const userSmiles = payload.smiles || "";
 
   try {
@@ -63,8 +63,9 @@ form.addEventListener("submit", async (e) => {
       );
     }
 
-    if (!res.ok) {
-      const msg = data.error || data.message || `Server error ${res.status}.`;
+    if (!res.ok || data.ok === false) {
+      const msg =
+        data.error || data.message || `Server error ${res.status}.`;
       throw new Error(msg);
     }
 
@@ -148,13 +149,24 @@ function renderResults(data, userSmiles) {
     exList.appendChild(li);
   });
 
-  // Structures: use user SMILES if given, otherwise AI base guess
-  const structures = data.structures || {};
+  // 🔬 Structures: choose the best SMILES source
+  // 1) Use user SMILES for the base if provided
+  // 2) Prefer RDKit canonical SMILES
+  // 3) Fall back to AI guesses or legacy data.structures
+
+  const aiStructures = data.ai_structures || data.structures || {};
+  const canonical = data.canonical_structures || {};
+
   const baseSmiles =
     (userSmiles && userSmiles.trim()) ||
-    structures.base_smiles_guess ||
+    canonical.base_smiles_guess ||
+    aiStructures.base_smiles_guess ||
     "";
-  const mutatedSmiles = structures.mutated_smiles_guess || "";
+
+  const mutatedSmiles =
+    canonical.mutated_smiles_canonical ||
+    aiStructures.mutated_smiles_guess ||
+    "";
 
   console.log("Base SMILES used for drawing:", baseSmiles);
   console.log("Mutated SMILES used for drawing:", mutatedSmiles);
